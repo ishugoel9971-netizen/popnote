@@ -3,7 +3,7 @@ import { Activity, BellOff, MessageCircle, RadioTower } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { mockMessages } from '../data/mockMessages';
 import type { FilterSettings } from '../types';
-import { runFocusPulseFilter } from '../utils/filterEngine';
+import { runPopnoteFilter } from '../utils/filterEngine';
 import { ControlPanel } from './ControlPanel';
 import { CrucialAlertCard } from './CrucialAlertCard';
 import { MetricCard } from './MetricCard';
@@ -21,19 +21,19 @@ const initialSettings: FilterSettings = {
 
 export function Dashboard() {
   const [settings, setSettings] = useState(initialSettings);
-  const filterResult = useMemo(() => runFocusPulseFilter(mockMessages, settings), [settings]);
+  const filterResult = useMemo(() => runPopnoteFilter(mockMessages, settings), [settings]);
 
   return (
     <main className="min-h-screen px-4 py-5 text-ink sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[310px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
         <ControlPanel settings={settings} onChange={setSettings} />
 
-        <div className="space-y-5">
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
-            <div className="rounded-lg bg-surface p-8 shadow-soft">
+        <div className="order-1 space-y-5 lg:order-2">
+          <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="rounded-lg bg-surface p-7 shadow-soft sm:p-8">
               <div>
-                <p className="text-sm font-medium text-appleBlue">FocusPulse</p>
-                <h1 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight text-ink sm:text-5xl">
+                <p className="text-sm font-medium text-appleBlue">Popnote</p>
+                <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-ink sm:text-5xl">
                   Fewer notifications. More attention.
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
@@ -42,39 +42,46 @@ export function Dashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <StatusRing label="WhatsApp" active={settings.enabledPlatforms.WhatsApp} value={filterResult.platformTotals.WhatsApp} />
-              <StatusRing label="Instagram" active={settings.enabledPlatforms.Instagram} value={filterResult.platformTotals.Instagram} />
-              <StatusRing label="Saved" active value={filterResult.savedPercent} suffix="%" />
-              <StatusRing label="Priority" active={filterResult.alerts.length > 0} value={filterResult.alerts.length} />
-            </div>
+            <ChannelPanel
+              instagram={filterResult.platformTotals.Instagram}
+              priorityCount={filterResult.alerts.length}
+              savedPercent={filterResult.savedPercent}
+              settings={settings}
+              whatsapp={filterResult.platformTotals.WhatsApp}
+            />
           </section>
 
           <section className="grid gap-4 md:grid-cols-3">
-            <MetricCard label="Unread" value={String(filterResult.monitored.length)} detail="Messages in the local sample set" icon={<RadioTower size={22} />} />
-            <MetricCard label="Quieted" value={String(filterResult.blocked)} detail="Low-priority items moved aside" icon={<BellOff size={22} />} tone="violet" />
-            <MetricCard label="Status" value="On" detail="Filtering runs in browser state" icon={<Activity size={22} />} />
+            <MetricCard label="Unread" value={String(filterResult.monitored.length)} detail="Messages available in this demo" icon={<RadioTower size={22} />} />
+            <MetricCard label="Set aside" value={String(filterResult.blocked)} detail="Lower-priority items grouped quietly" icon={<BellOff size={22} />} tone="violet" />
+            <MetricCard label="Status" value="Ready" detail="Preferences update instantly" icon={<Activity size={22} />} />
           </section>
 
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
             <div className="glass rounded-lg p-5">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">Priority</p>
-                  <h2 className="mt-1 text-xl font-semibold text-ink">Important Messages</h2>
+                  <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Priority</p>
+                  <h2 className="mt-1 text-xl font-semibold text-ink">Priority Inbox</h2>
                 </div>
                 <MessageCircle className="text-appleBlue" size={22} />
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-2">
-                {filterResult.alerts.slice(0, 6).map((alert) => (
-                  <CrucialAlertCard alert={alert} key={alert.id} />
-                ))}
-              </div>
+              {filterResult.alerts.length ? (
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {filterResult.alerts.slice(0, 6).map((alert) => (
+                    <CrucialAlertCard alert={alert} key={alert.id} />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-lg border border-line/80 bg-white p-6 text-sm text-muted">
+                  No priority messages match your current contacts and keywords.
+                </div>
+              )}
             </div>
 
             <div className="glass rounded-lg p-5">
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">Today</p>
+              <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Today</p>
               <h2 className="mt-1 text-xl font-semibold text-ink">Notification Savings</h2>
               <div className="mt-5 space-y-4">
                 {[
@@ -109,27 +116,40 @@ export function Dashboard() {
   );
 }
 
-function StatusRing({
-  label,
-  active,
-  value,
-  suffix = '',
+function ChannelPanel({
+  instagram,
+  priorityCount,
+  savedPercent,
+  settings,
+  whatsapp,
 }: {
-  label: string;
-  active: boolean;
-  value: number;
-  suffix?: string;
+  instagram: number;
+  priorityCount: number;
+  savedPercent: number;
+  settings: FilterSettings;
+  whatsapp: number;
 }) {
+  const rows = [
+    { label: 'WhatsApp', value: whatsapp, state: settings.enabledPlatforms.WhatsApp ? 'On' : 'Paused' },
+    { label: 'Instagram', value: instagram, state: settings.enabledPlatforms.Instagram ? 'On' : 'Paused' },
+    { label: 'Saved today', value: `${savedPercent}%`, state: 'Quieted' },
+    { label: 'Priority', value: priorityCount, state: priorityCount ? 'Review' : 'Clear' },
+  ];
+
   return (
-    <div className="glass rounded-lg p-4 text-center">
-      <div className={`soft-ring mx-auto grid h-24 w-24 place-items-center rounded-full border ${active ? 'border-appleBlue/20 bg-softBlue text-appleBlue' : 'border-line bg-neutral-100 text-muted'}`}>
-        <span className="text-2xl font-semibold">
-          {value}
-          {suffix}
-        </span>
+    <div className="glass rounded-lg p-5">
+      <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Channels</p>
+      <div className="mt-4 divide-y divide-line/70">
+        {rows.map((row) => (
+          <div className="flex items-center justify-between py-3 first:pt-0 last:pb-0" key={row.label}>
+            <div>
+              <p className="text-sm font-medium text-ink">{row.label}</p>
+              <p className="mt-0.5 text-xs text-muted">{row.state}</p>
+            </div>
+            <p className="text-xl font-semibold text-ink">{row.value}</p>
+          </div>
+        ))}
       </div>
-      <p className="mt-3 text-sm font-medium text-ink">{label}</p>
-      <p className={`mt-1 text-xs ${active ? 'text-appleBlue' : 'text-muted'}`}>{active ? 'On' : 'Paused'}</p>
     </div>
   );
 }

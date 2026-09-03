@@ -33,10 +33,10 @@ export function ControlPanel({ settings, onChange }: ControlPanelProps) {
   };
 
   return (
-    <aside className="glass h-full rounded-lg p-5">
+    <aside className="glass order-2 h-full rounded-lg p-5 lg:order-1">
       <div className="mb-7 flex items-center justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">Settings</p>
+          <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Settings</p>
           <h2 className="mt-1 text-xl font-semibold text-ink">Focus Controls</h2>
         </div>
         <SlidersHorizontal className="text-appleBlue" size={22} />
@@ -49,6 +49,7 @@ export function ControlPanel({ settings, onChange }: ControlPanelProps) {
         </span>
         <input
           className="mt-4 w-full accent-appleBlue"
+          aria-label="Notification limit"
           type="range"
           min="5"
           max="120"
@@ -75,6 +76,7 @@ export function ControlPanel({ settings, onChange }: ControlPanelProps) {
       <TagEditor
         icon={<Bell size={16} />}
         label="VIP Names"
+        inputLabel="Add VIP name"
         value={vipInput}
         tags={settings.vipNames}
         onInput={setVipInput}
@@ -88,6 +90,7 @@ export function ControlPanel({ settings, onChange }: ControlPanelProps) {
       <TagEditor
         icon={<Hash size={16} />}
         label="Priority Keywords"
+        inputLabel="Add priority keyword"
         value={keywordInput}
         tags={settings.priorityKeywords}
         onInput={setKeywordInput}
@@ -131,6 +134,7 @@ function PlatformToggle({
 
 function TagEditor({
   icon,
+  inputLabel,
   label,
   value,
   tags,
@@ -139,6 +143,7 @@ function TagEditor({
   onRemove,
 }: {
   icon: ReactNode;
+  inputLabel: string;
   label: string;
   value: string;
   tags: string[];
@@ -155,6 +160,7 @@ function TagEditor({
       <div className="flex gap-2">
         <input
           className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink outline-none transition placeholder:text-neutral-400 focus:border-appleBlue"
+          aria-label={inputLabel}
           placeholder="Add name or word"
           value={value}
           onChange={(event) => onInput(event.target.value)}

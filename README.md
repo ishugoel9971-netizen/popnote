@@ -13,7 +13,7 @@ The app uses fully local mock data. There is no backend, database, authenticatio
 - WhatsApp and Instagram monitoring toggles
 - Expandable message summaries for lower-priority conversations
 - Quick reply interaction for important messages
-- Minimal Apple-inspired visual design with soft cards, neutral colors, and restrained motion
+- Minimal product design with soft surfaces, neutral colors, and restrained motion
 - Fully client-side filtering logic
 
 ## Tech Stack

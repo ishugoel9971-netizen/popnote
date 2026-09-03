@@ -6,13 +6,13 @@ const includesAny = (value: string, tokens: string[]) => {
 };
 
 const summaryTemplates = [
-  'Logistics, reactions, and casual updates were grouped into one low-priority digest.',
+  'Logistics, reactions, and casual updates were grouped into a short digest.',
   'Plans are mostly confirmed; no direct action is needed right now.',
   'Repeated chat chatter and promo-style content were muted into a compact summary.',
   'Conversation continued without a direct mention or high-priority keyword.',
 ];
 
-export function runFocusPulseFilter(messages: MockMessage[], settings: FilterSettings) {
+export function runPopnoteFilter(messages: MockMessage[], settings: FilterSettings) {
   const monitored = messages.filter((message) => settings.enabledPlatforms[message.platform]);
   const thresholdBreached = monitored.length > settings.threshold;
 
@@ -27,7 +27,7 @@ export function runFocusPulseFilter(messages: MockMessage[], settings: FilterSet
       const keywordMatch = includesAny(message.content, settings.priorityKeywords);
       return {
         ...message,
-        reason: senderMatch ? 'VIP sender detected' : 'Priority keyword match',
+        reason: senderMatch ? 'Saved contact' : 'Keyword match',
         severity: senderMatch && keywordMatch ? 'critical' : 'high',
       };
     })

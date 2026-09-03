@@ -48,6 +48,7 @@ export function CrucialAlertCard({ alert }: { alert: CrucialAlert }) {
         >
           <div className="mt-3 rounded-lg border border-line bg-neutral-50 p-3">
             <textarea
+              aria-label={`Reply to ${alert.sender}`}
               className="min-h-20 w-full resize-none rounded-lg border border-line bg-white p-3 text-sm text-ink outline-none placeholder:text-neutral-400 focus:border-appleBlue"
               placeholder="Draft a calm, concise response..."
             />
