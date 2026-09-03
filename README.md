@@ -25,8 +25,71 @@ The app uses fully local mock data. There is no backend, database, authenticatio
 - Framer Motion
 - Lucide React
 
+## Getting Started
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Run the development server:
+
+```bash
+pnpm dev
+```
+
+Open the app:
+
+```text
+http://127.0.0.1:5173/
+```
+
+To run on port 3000:
+
+```bash
+pnpm vite --host 127.0.0.1 --port 3000
+```
+
+## Available Scripts
+
+```bash
+pnpm dev
+```
+
+Starts the local Vite development server.
+
+```bash
+pnpm build
+```
+
+Runs TypeScript checks and creates a production build.
+
+```bash
+pnpm preview
+```
+
 Serves the production build locally for review.
 
+## Project Structure
+
+```text
+src/
+  components/
+    ControlPanel.tsx
+    CrucialAlertCard.tsx
+    Dashboard.tsx
+    MetricCard.tsx
+    ProcessingOverlay.tsx
+    SmartSummaryFeed.tsx
+  data/
+    mockMessages.ts
+  utils/
+    filterEngine.ts
+  main.tsx
+  styles.css
+  types.ts
+```
 
 ## Core Logic
 
